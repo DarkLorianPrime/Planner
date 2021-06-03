@@ -1,17 +1,22 @@
 import os
+import sqlite3
 import sys
 
 import PyQt5.QtWidgets
-from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
-from PyQt5.uic.properties import QtWidgets
-from PyQt5 import *
+from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5 import QtWidgets
+
+import Models
 import design
-import sqlite3
-from projects.Planner import Models, window_design
+import window_design
 from logger import logger
 
+DB_DIR = ''
+DB_NAME = 'login.sqlite'
+DB_PATH = os.path.join(DB_DIR or os.path.abspath(os.path.curdir), DB_NAME)
+
 Name = ''
-conn = sqlite3.connect(f'C:/USERS/{os.getlogin()}/AppData/Roaming/login.sqlite')
+conn = sqlite3.connect(DB_PATH)
 conn.execute('CREATE TABLE IF NOT EXISTS user(Login text)')
 cur = conn.cursor()
 cur.execute('DELETE FROM user')
@@ -122,6 +127,10 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow, QtWidgets.QLineEdi
     def add_group(self):
         cur.execute('select * from user')
         r = cur.fetchone()
+        # TODO Мб какие-то проверки сделать или уточнить что тут должно происходить?
+        # TODO Ибо вот я запустил первый раз, а у меня ошибка, потому что r тут None
+        if not r:
+            r = ['test_name']
         New_test(what='группы', name=r[0]).show()
 
     @logger()
