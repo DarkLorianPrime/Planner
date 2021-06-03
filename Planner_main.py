@@ -16,12 +16,10 @@ DB_NAME = 'login.sqlite'
 DB_PATH = os.path.join(DB_DIR or os.path.abspath(os.path.curdir), DB_NAME)
 
 Name = ''
-# conn = sqlite3.connect(f'C:/USERS/{os.getlogin()}/AppData/Roaming/login.sqlite')
 conn = sqlite3.connect(DB_PATH)
 conn.execute('CREATE TABLE IF NOT EXISTS user(Login text)')
 cur = conn.cursor()
 cur.execute('DELETE FROM user')
-print(conn, cur)
 
 
 class Object_receiver(QObject):
