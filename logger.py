@@ -8,6 +8,9 @@ import time
 
 
 # Куда же без оптимизации. Если краш в логгерных функциях - то это не краш, а так, ошибочка.
+import traceback
+
+
 def logger(info=None):
     rw = open(f'{os.getcwd()}/Logs.log', 'a+')
     if info is not None:
@@ -27,6 +30,8 @@ def logger(info=None):
                 returned = args
                 rw_log.write(
                     f'{time.strftime("/%H:%M:%S/")} [ERROR] Function [{fn.__name__}] Loading error: \n {ex} \n')
+                rw_log.write('Traceback:\n')
+                rw_log.write(traceback.format_exc())
                 print(
                     '[ERROR]Error, look at the information in the logs!\n[ERROR]Function returned the original value!')
             rw_log.close()
