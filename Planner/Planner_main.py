@@ -18,11 +18,7 @@ cur.execute('DELETE FROM user')
 
 
 class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow, QtWidgets.QLineEdit, QtWidgets.QListWidget):
-    try:
-        update = pyqtSignal()
-    except Exception as ex:
-        print(ex)
-
+    update = pyqtSignal()
 
     @logger()
     def __init__(self):
@@ -79,7 +75,6 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow, QtWidgets.QLineEdi
         groups = Models.Groups.select().where(Models.Groups.user_name == r[0])
         for i in groups:
             i_te.append(i.group_name)
-        print(i_te)
         if i_te:
             self.comboBox_2.addItems(i_te)
         return i_te
