@@ -7,7 +7,7 @@ from PyQt5.uic.properties import QtWidgets
 from PyQt5 import *
 import design
 import sqlite3
-from projects.Planner import Models, window_design
+import Models, window_design
 from logger import logger
 
 Name = ''
@@ -21,7 +21,19 @@ class Object_receiver(QObject):
     update = pyqtSignal()
 
 
+class Shop(object):
+    __instances = {}
+
+    @staticmethod
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Shop, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
 class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow, QtWidgets.QLineEdit, QtWidgets.QListWidget):
+    __metaclass__ = Shop()
+
     @logger()
     def __init__(self):
         super().__init__()
@@ -38,6 +50,7 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow, QtWidgets.QLineEdi
         self.pushButton_8.clicked.connect(lambda: self.del_case())
         self.pushButton_7.clicked.connect(lambda: self.add_case())
         self.pushButton_9.clicked.connect(lambda: self.login())
+        self.g = self.check()
         self.comboBox_2.currentIndexChanged.connect(lambda: self.subgroupselect())
         self.c = Object_receiver()
         self.c.update.connect(lambda: self.check())
@@ -73,13 +86,16 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow, QtWidgets.QLineEdi
     def check(self):
         print('Запустил')
         i_te = []
-        self.comboBox_2.clear()
         cur.execute('select * from user')
         r = cur.fetchone()
+        r = ['\..']
+        if r is None:
+            return
         groups = Models.Groups.select().where(Models.Groups.user_name == r[0])
         for i in groups:
             i_te.append(i.group_name)
         if i_te:
+            self.comboBox_2.clear()
             self.comboBox_2.addItems(i_te)
         return i_te
 
@@ -138,6 +154,8 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow, QtWidgets.QLineEdi
 
 
 class New_test(QtWidgets.QMainWindow, window_design.Ui_Dialog, QtWidgets.QLineEdit, QtWidgets.QListWidget):
+    __metaclass__ = Shop()
+
     @logger()
     def __init__(self, what, name):
         super().__init__()
@@ -168,7 +186,9 @@ class New_test(QtWidgets.QMainWindow, window_design.Ui_Dialog, QtWidgets.QLineEd
                     else:
                         Models.Groups(group_id=int(v) + 1, group_name=text, user_name=name).save()
                     self.destroy()
-                    ExampleApp().c.update.emit()
+                    # ExampleApp().c.update.emit()
+                    var = ExampleApp().g
+                    print(var)
                 else:
                     PyQt5.QtWidgets.QMessageBox.warning(self, 'Warning!', 'Такая группа уже существует!')
             else:

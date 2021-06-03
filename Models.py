@@ -1,5 +1,5 @@
 import Connector
-from peewee import *
+from peewee import CharField
 
 
 class Groups(Connector.migrator):
